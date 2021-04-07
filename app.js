@@ -1,3 +1,6 @@
+const fs = require('fs');
+const generatePage = require('./src/page-template');
+
 const inquirer = require('inquirer');
 
 const promptUser = () => {
@@ -118,7 +121,7 @@ const promptProject = portfolioData => {
         }
     ]).then(projectData => {
         portfolioData.projects.push(projectData);
-        if (projectData.data.confirmAddProject) {
+        if (projectData.confirmAddProject) {
             return promptProject(portfolioData);
         } else {
             return portfolioData;
@@ -127,18 +130,12 @@ const promptProject = portfolioData => {
 }
 
 promptUser()
-    .then(answers => console.log(answers))
     .then(promptProject)
-    .then(projectAnswers => console.log(projectAnswers));
+    .then(portfolioData => {
+        const pageHTML = generatePage(portfolioData);
 
-/* const fs = require('fs');
-const generatePage = require('./src/page-template');
-
-const pageHTML = generatePage(name, github);
-
-fs.writeFile('./index.html', pageHTML, err => {
-    if (err) throw err;
-
-    console.log('Portfolio complete! Check out index.html to see the output!');
-}); */
+        fs.writeFile('./index.html', pageHTML, err => {
+            if (err) throw err;
+        });
+});
 
